@@ -48,11 +48,25 @@ app.use((req, _res, next) => {
 // ─────────────────────────────────────────────
 //  Routes
 // ─────────────────────────────────────────────
+
+// API Routes - must come BEFORE catch-all
 app.use('/api/users', require('./routes/userRoutes'));
 
-// Health check with detailed debugging
-app.get('/', (req, res) => {
-  const mongoConnected =!!require('mongoose').connection.db;
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  const mongoConnected = !!require('mongoose').connection.db;
+  res.json({
+    success: true,
+    message: '🚀 User Management API is running',
+    environment: process.env.NODE_ENV || 'development',
+    mongoDBConnected: mongoConnected,
+    onVercel: process.env.VERCEL === '1',
+  });
+});
+
+// API Info endpoint
+app.get('/api/info', (req, res) => {
+  const mongoConnected = !!require('mongoose').connection.db;
   
   res.json({
     success: true,
@@ -71,25 +85,17 @@ app.get('/', (req, res) => {
       'DELETE /api/users/:id':          'Delete user by ID',
       'GET    /api/users/search/text':  'Full-text search on bio (?q=keyword)',
     },
-    queryParams: {
-      name:    'Search by name (partial, case-insensitive)',
-      email:   'Filter by email',
-      age:     'Filter by exact age',
-      minAge:  'Filter age >= minAge',
-      maxAge:  'Filter age <= maxAge',
-      hobby:   'Filter by hobby (comma-separated)',
-      search:  'Full text search on bio',
-      sortBy:  'Sort field (default: createdAt)',
-      order:   'asc | desc (default: desc)',
-      page:    'Page number (default: 1)',
-      limit:   'Results per page (default: 10)',
-    },
   });
 });
 
-// 404 handler
+// API error handler (for /api/* routes that don't match)
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: `API route ${req.url} not found` });
+});
+
+// Frontend: Serve index.html for all non-API routes (SPA fallback)
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route ${req.url} not found` });
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 // Global error handler

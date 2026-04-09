@@ -999,8 +999,8 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
-    // Configuration
-    const API_BASE_URL = 'http://localhost:5000/api/users';
+    // Configuration - Use relative URL to work on localhost, Vercel, etc.
+    const API_BASE_URL = '/api/users';
 
     // State
     let allUsers = [];

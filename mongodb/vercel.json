@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "npm install",
   "builds": [
     {
       "src": "server.js",
@@ -8,11 +9,20 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "server.js"
+    },
+    {
+      "src": "/public/(.*)",
+      "dest": "public/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/index.html"
     }
   ],
   "env": {
     "NODE_ENV": "production"
   }
 }
+
