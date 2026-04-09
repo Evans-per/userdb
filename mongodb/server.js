@@ -6,9 +6,16 @@ const connectDB = require('./config/db');
 const app = express();
 
 // ─────────────────────────────────────────────
-//  Connect to MongoDB
+//  Connect to MongoDB (non-blocking)
 // ─────────────────────────────────────────────
-connectDB();
+connectDB().then(connected => {
+  if (connected) {
+    console.log('🎯 Database operations enabled');
+  }
+}).catch(err => {
+  console.error('Database init error:', err.message);
+  console.warn('⚠️  Server continuing without database');
+});
 
 // ─────────────────────────────────────────────
 //  Middleware
